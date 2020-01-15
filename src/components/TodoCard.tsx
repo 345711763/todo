@@ -81,7 +81,7 @@ interface Values extends Partial<ISubTodo> {
 const renderField = (field: any) => {
   console.log(field.input);
   return (<TextField {...field.input} placeholder="title"/>);
-
+}
 const formatTitle = (todo: Record<ITodo>) => {
   let title = todo.get('title');
   if (todo.get('value1') !== '') {
