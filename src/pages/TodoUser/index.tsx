@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {ChangeEvent} from 'react';
 import {
   compose,
   bindActionCreators,
@@ -17,7 +17,7 @@ import {
   Typography,
   Button,
 } from '@material-ui/core';
-import { TextField } from 'formik-material-ui';
+import TextField from '@material-ui/core/TextField';
 import {
   AddTodoAction,
   DeleteTodoAction,
@@ -36,7 +36,7 @@ import {
 } from '../../selectors/default';
 import { createStructuredSelector } from 'reselect';
 import TodoCard from '../../components/TodoCard';
-import { Formik, Field, FormikHelpers, ErrorMessage } from 'formik';
+import {Formik, Field, FormikHelpers, ErrorMessage, FormikState, withFormik} from 'formik';
 import pick from 'lodash/pick';
 
 interface ITodoComponentProps {
@@ -77,6 +77,7 @@ const Todo: React.FC<ITodoProps> = (props) => {
     selectedTodo,
   } = props;
 
+  console.log('rerendering Todo');
   if (user == null) {
     return (
       <Grid
@@ -104,7 +105,10 @@ const Todo: React.FC<ITodoProps> = (props) => {
     value3: '',
     value4: '',
   }
-
+  console.log(selectedTodo !== undefined && selectedTodo.toJS());
+  console.log(Object.assign({}, defaultValues));
+  // change initialValues when selectedTodo changed.
+  console.log(selectedTodo != null);
   const initialValues = selectedTodo != null
     ? Object.assign({}, defaultValues, pick(selectedTodo.toJS(), [
       'title',
@@ -115,6 +119,7 @@ const Todo: React.FC<ITodoProps> = (props) => {
     ]))
     : defaultValues;
 
+  console.log(initialValues);
   // for submit action - creates new todo with values given
   const onSubmit = (values: Values, formikHelpers: FormikHelpers<Values>) => {
     if (selectedTodo != null) {
@@ -137,7 +142,7 @@ const Todo: React.FC<ITodoProps> = (props) => {
       values,
     })
   };
-  return (<Formik<Values>
+  return (<Formik
     initialValues={initialValues}
     enableReinitialize={true}
     validateOnChange={true}
@@ -146,6 +151,14 @@ const Todo: React.FC<ITodoProps> = (props) => {
       onSubmit(values, forkmikHelpers);
     }}
     render={({ handleSubmit, handleChange, handleBlur, values, errors, resetForm, setTouched, validateForm }) => {
+      console.log("render TODO");
+      console.log(values);
+      const onInputChange = (e: any) => {
+        if(selectedTodo) {
+          editTodo(selectedTodo.get('id'), selectedTodo.set(e.target.name, e.target.value));
+        }
+        handleChange(e);
+      };
       return (<Grid
         container={true}
         direction='column'
@@ -179,10 +192,19 @@ const Todo: React.FC<ITodoProps> = (props) => {
                 item={true}
               >
                 <Field
-                  name='title'
-                  label='title'
-                  component={TextField}
-                />
+                    name='title'
+                >
+                  {({
+                      field, // { name, value, onChange, onBlur }
+                      form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+                      meta,
+                    }: any) => {
+                    console.log(field);
+                    return (
+                     <TextField {...field} onChange={onInputChange} value={field.value} placeholder="title"/>
+                    );
+                  }}
+                </Field>
                 <ErrorMessage
                   name='title'
                 />
@@ -191,10 +213,15 @@ const Todo: React.FC<ITodoProps> = (props) => {
                 item={true}
               >
                 <Field
-                  name='value1'
-                  label='value1'
-                  component={TextField}
-                />
+                    name='value1'
+                >
+                  {({
+                      field, // { name, value, onChange, onBlur }
+                      form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+                      meta,
+                    }: any) => (<TextField {...field} onChange={onInputChange} value={field.value} placeholder="value1"/>
+                  )}
+                </Field>
                 <ErrorMessage
                   name='value1'
                 />
@@ -204,9 +231,14 @@ const Todo: React.FC<ITodoProps> = (props) => {
               >
                 <Field
                   name='value2'
-                  label='value2'
-                  component={TextField}
-                />
+                >
+                  {({
+                      field, // { name, value, onChange, onBlur }
+                      form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+                      meta,
+                    }: any) => (<TextField {...field} onChange={onInputChange} value={field.value} placeholder="value2"/>
+                  )}
+                </Field>
                 <ErrorMessage
                   name='value2'
                 />
@@ -215,10 +247,15 @@ const Todo: React.FC<ITodoProps> = (props) => {
                 item={true}
               >
                 <Field
-                  name='value3'
-                  label='value3'
-                  component={TextField}
-                />
+                    name='value3'
+                >
+                  {({
+                      field, // { name, value, onChange, onBlur }
+                      form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+                      meta,
+                    }: any) => (<TextField {...field} onChange={onInputChange} value={field.value} placeholder="value3"/>
+                  )}
+                </Field>
                 <ErrorMessage
                   name='value3'
                 />
@@ -227,10 +264,15 @@ const Todo: React.FC<ITodoProps> = (props) => {
                 item={true}
               >
                 <Field
-                  name='value4'
-                  label='value4'
-                  component={TextField}
-                />
+                    name='value4'
+                >
+                  {({
+                      field, // { name, value, onChange, onBlur }
+                      form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+                      meta,
+                    }: any) => (<TextField {...field} onChange={onInputChange} value={field.value} placeholder="value4"/>
+                  )}
+                </Field>
                 <ErrorMessage
                   name='value4'
                 />
@@ -264,7 +306,7 @@ const Todo: React.FC<ITodoProps> = (props) => {
                 Reset
               </Button>
             </Grid>
-  
+
           </Grid>
           <Grid
             container={true}
@@ -306,5 +348,5 @@ const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => {
 
 
 export default compose<React.ComponentClass<ITodoComponentProps>>(
-  connect(mapStateToProps, mapDispatchToProps)
+  connect(mapStateToProps, mapDispatchToProps),
 )(Todo);
