@@ -41,13 +41,13 @@ const FieldTextField: React.FC<FieldTextFieldProps> = (props) => {
   } = props;
 
   return (
-    <FormControl error={touched && (error != null)} {...FormControlProps} aria-describedby={id}>
-      <TextField
-        {...input}
-        {...TextFieldProps}
-      />
-      <FormHelperText id={id}>{touched && (error || warning)}</FormHelperText>
-    </FormControl>
+      <FormControl error={touched && (error != null)} {...FormControlProps} aria-describedby={id}>
+        <TextField
+            {...input}
+            {...TextFieldProps}
+        />
+        <FormHelperText id={id}>{touched && (error || warning)}</FormHelperText>
+      </FormControl>
   );
 };
 
