@@ -122,18 +122,17 @@ const Todo: React.FC<ITodoProps> = (props) => {
   console.log(initialValues);
   // for submit action - creates new todo with values given
   const onSubmit = (values: Values, formikHelpers: FormikHelpers<Values>) => {
-    if (selectedTodo != null) {
-      editTodo(
-        selectedTodo.get('id'),
-        TodoFactory(selectedTodo.merge(values)),
-      )
-    } else {
-
+    // if (selectedTodo != null) {
+    //   editTodo(
+    //     selectedTodo.get('id'),
+    //     TodoFactory(selectedTodo.merge(values)),
+    //   )
+    // } else {
+      console.log("hi");
       addTodo(
         userId,
         TodoFactory(values),
-      )
-    }
+      );
     formikHelpers.resetForm();
   };
 
