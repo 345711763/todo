@@ -41,9 +41,9 @@ import {
   makeSelectSubTodosForTodo, makeSelectSelectedTodoId,
 } from '../selectors/default';
 import classnames from 'classnames';
-import { reduxForm, Field, Form } from 'redux-form';
-import FieldTextField from './FieldTextField';
+import { reduxForm, Field, Form } from 'redux-form/immutable';
 import { InjectedFormProps } from 'redux-form';
+import TextField from "@material-ui/core/TextField";
 
 interface ITodoCardComponentProps {
   todo: Record<ITodo>;
@@ -75,8 +75,12 @@ const useStyles = makeStyles({
 });
 
 interface Values extends Partial<ISubTodo> {
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void> ;
 }
-
+const renderField = (field: any) => {
+  console.log(field.input);
+  return (<TextField {...field.input} placeholder="title"/>);
+};
 const TodoCard: React.FC<ITodoCardProps & InjectedFormProps> = (props) => {
   const classes = useStyles();
   const {
@@ -86,12 +90,9 @@ const TodoCard: React.FC<ITodoCardProps & InjectedFormProps> = (props) => {
     subtodos,
     dispatch,
     selectedTodoId,
-
     reset,
     handleSubmit,
   } = props;
-
-
   // (values: Record<Values>) but handleSubmit is typed wrong
   const onSubmit = (values: any) => {
     dispatch(new AddSubTodoAction({
@@ -101,7 +102,7 @@ const TodoCard: React.FC<ITodoCardProps & InjectedFormProps> = (props) => {
     reset()
   }
   return (
-    <Form<Record<Values>> onSubmit={handleSubmit(onSubmit)}>
+    <Form onSubmit={handleSubmit(onSubmit)}>
       <Card className={classes.card}>
         <CardActionArea>
           <CardContent
@@ -200,11 +201,8 @@ const TodoCard: React.FC<ITodoCardProps & InjectedFormProps> = (props) => {
             Delete
           </Button>
           <Field
-            TextFieldProps={{
-              label: 'title',
-            }}
             name='title'
-            component={FieldTextField}
+            component={renderField}
           />
           <Button 
             size="small" 
@@ -220,23 +218,26 @@ const TodoCard: React.FC<ITodoCardProps & InjectedFormProps> = (props) => {
 }
 
 const mapStateToProps = (state: any, ownProps: ITodoCardComponentProps) => {
+  console.log("mapStateToProps");
   const {
     todo
   } = ownProps;
   const todoId = todo.get('id');
   const complete = todo.get('complete');
   const form = `form_${todoId}`;
+  console.log(form);
+  console.log(ownProps);
+  const result = createStructuredSelector({
+    selectedTodoId: makeSelectSelectedTodoId(),
+    subtodos: makeSelectSubTodosForTodo(todoId),
+  })(state);
   return {
     form,
     todoId,
     complete,
-    ...createStructuredSelector({
-      selectedTodoId: makeSelectSelectedTodoId(),
-      subtodos: makeSelectSubTodosForTodo(todoId),
-    })(state)
+    ...result
   }
 };
-
 const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => {
   return {
     dispatch,
@@ -245,7 +246,7 @@ const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => {
 
 export default compose<React.ComponentClass<ITodoCardComponentProps>>(
   connect(mapStateToProps, mapDispatchToProps),
-  reduxForm({
-    destroyOnUnmount: true,
-  }),
+    reduxForm({
+      destroyOnUnmount: true,
+    }),
 )(TodoCard);

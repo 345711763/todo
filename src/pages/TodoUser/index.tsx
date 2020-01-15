@@ -77,7 +77,6 @@ const Todo: React.FC<ITodoProps> = (props) => {
     selectedTodo,
   } = props;
 
-  console.log('rerendering Todo');
   if (user == null) {
     return (
       <Grid
@@ -105,10 +104,6 @@ const Todo: React.FC<ITodoProps> = (props) => {
     value3: '',
     value4: '',
   }
-  console.log(selectedTodo !== undefined && selectedTodo.toJS());
-  console.log(Object.assign({}, defaultValues));
-  // change initialValues when selectedTodo changed.
-  console.log(selectedTodo != null);
   const initialValues = selectedTodo != null
     ? Object.assign({}, defaultValues, pick(selectedTodo.toJS(), [
       'title',
@@ -119,7 +114,6 @@ const Todo: React.FC<ITodoProps> = (props) => {
     ]))
     : defaultValues;
 
-  console.log(initialValues);
   // for submit action - creates new todo with values given
   const onSubmit = (values: Values, formikHelpers: FormikHelpers<Values>) => {
     // if (selectedTodo != null) {
@@ -128,7 +122,7 @@ const Todo: React.FC<ITodoProps> = (props) => {
     //     TodoFactory(selectedTodo.merge(values)),
     //   )
     // } else {
-      console.log("hi");
+
       addTodo(
         userId,
         TodoFactory(values),
@@ -150,8 +144,6 @@ const Todo: React.FC<ITodoProps> = (props) => {
       onSubmit(values, forkmikHelpers);
     }}
     render={({ handleSubmit, handleChange, handleBlur, values, errors, resetForm, setTouched, validateForm }) => {
-      console.log("render TODO");
-      console.log(values);
       const onInputChange = (e: any) => {
         if(selectedTodo) {
           editTodo(selectedTodo.get('id'), selectedTodo.set(e.target.name, e.target.value));
@@ -198,7 +190,6 @@ const Todo: React.FC<ITodoProps> = (props) => {
                       form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
                       meta,
                     }: any) => {
-                    console.log(field);
                     return (
                      <TextField {...field} onChange={onInputChange} value={field.value} placeholder="title"/>
                     );
@@ -313,7 +304,7 @@ const Todo: React.FC<ITodoProps> = (props) => {
           >
             {
               todosForUser.map((todo, index) => {
-                return <TodoCard todo={todo} key={index} />
+                return <TodoCard todo={todo} key={index}/>
               })
             }
           </Grid>
