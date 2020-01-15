@@ -77,9 +77,26 @@ const useStyles = makeStyles({
 interface Values extends Partial<ISubTodo> {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void> ;
 }
+
 const renderField = (field: any) => {
   console.log(field.input);
   return (<TextField {...field.input} placeholder="title"/>);
+
+const formatTitle = (todo: Record<ITodo>) => {
+  let title = todo.get('title');
+  if (todo.get('value1') !== '') {
+    title = title + ' ' + todo.get('value1') + ';';
+  }
+  if (todo.get('value2') !== '') {
+    title = title + todo.get('value2') + ';';
+  }
+  if (todo.get('value3') !== '') {
+    title = title + todo.get('value3') + ';';
+  }
+  if (todo.get('value4') !== '') {
+    title = title + todo.get('value4') + ';';
+  }
+  return title;
 };
 const TodoCard: React.FC<ITodoCardProps & InjectedFormProps> = (props) => {
   const classes = useStyles();
@@ -140,7 +157,7 @@ const TodoCard: React.FC<ITodoCardProps & InjectedFormProps> = (props) => {
                     root: complete ? classes.completed : '',
                   }}
                 >
-                  {todo.get('title')} {`${todo.get('value1')};${todo.get('value2')};${todo.get('value3')};${todo.get('value4')}`}}
+                  {formatTitle(todo)}
                 </Typography>
               </Grid>
               <Grid
@@ -191,9 +208,9 @@ const TodoCard: React.FC<ITodoCardProps & InjectedFormProps> = (props) => {
         </CardActionArea>
         <CardActions>
           <Button
-            size="small" 
-            color="primary" 
-            //@ts-ignore   
+            size="small"
+            color="primary"
+            //@ts-ignore
             onClick={() => {
               dispatch(new DeleteTodoAction({ todo }));
             }}
@@ -204,8 +221,8 @@ const TodoCard: React.FC<ITodoCardProps & InjectedFormProps> = (props) => {
             name='title'
             component={renderField}
           />
-          <Button 
-            size="small" 
+          <Button
+            size="small"
             color="primary"
             type="submit"
           >

@@ -31,10 +31,11 @@ interface IUserListProps extends IUserListComponentProps {
 
 const addUser = (user: Record<IUser>) => new AddUserAction({ user });
 const deleteUser = (userId: number) => new DeleteUserAction({ userId});
+const isTextInputValid = (textInput: string) => textInput.length > 0;
 
 const UserList: React.FC<IUserListProps> = (props) => {
   const [textInput, setTextInput] = useState('');
-
+  const [errorMessage, setErrorMessage] = useState('');
   const {
     addUser,
     deleteUser,
@@ -85,17 +86,23 @@ const UserList: React.FC<IUserListProps> = (props) => {
               variant='outlined'
               onClick={
                 () => {
-                  addUser(
-                    UserFactory({
-                      name: textInput,
-                    }),
-                  );
-                  setTextInput('');
+                  if (isTextInputValid(textInput)) {
+                    addUser(
+                        UserFactory({
+                          name: textInput,
+                        }),
+                    );
+                    setTextInput('');
+                    setErrorMessage('');
+                  } else {
+                    setErrorMessage('This field is invalid');
+                  }
                 }
               }
             >
               Add User
             </Button>
+            <span>{errorMessage}</span>
           </Grid>
         </Grid>
         {
